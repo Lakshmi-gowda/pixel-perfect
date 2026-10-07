@@ -8,3 +8,10 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the existing TanStack Start routing/bootstrap; implement all requested interactions client-side because the product is frontend-only and the platform router is fixed.
+- Route all model requests through src/api; switch the mock adapter by VITE_USE_MOCK so the future external service can replace it without UI changes.
+- Keep shared assessment state in one React context with no browser storage so refresh clears patient values.
+- Load the Three.js scene lazily after hydration and unmount it on page changes so SSR stays browser-safe and only one canvas exists.
+- Derive form controls and validation from model metadata; filter forbidden target fields at both metadata and request boundaries to prevent leakage.
+- Centralize branding, disclaimers, risk cutoffs and editable medical copy in config/content modules so review and replacement stay consistent.
