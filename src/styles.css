@@ -140,7 +140,8 @@
 .verdict-stat strong { display:block; font-size:26px; font-variant-numeric:tabular-nums; }
 .verdict-stat span { font-size:11px; color:var(--muted-foreground); }
 .result-disclaimer { padding:12px 0; color:var(--muted-foreground); font-size:13px; }
-.result-grid { display:grid; grid-template-columns:1.35fr 1fr; gap:24px; margin-top:16px; }
+.result-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:24px; margin-top:16px; }
+.result-grid > *, .result-lower > * { min-width:0; }
 .stage { position:relative; background:var(--stage-gradient); min-height:510px; }
 .stage-top { padding:18px 0 10px; }
 .stage-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:11px; color:var(--muted-foreground); }
@@ -174,7 +175,7 @@
 .explanation-row span { overflow-wrap:anywhere; }
 .explanation-row strong { font-size:10px; text-align:right; color:var(--primary); }
 .explanation-row.negative strong { color:var(--low); }
-.result-lower { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px; }
+.result-lower { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; margin-top:24px; }
 .measurements { width:100%; border-collapse:collapse; font-size:11px; }
 .measurements th { text-align:left; padding:12px 8px; font-weight:600; color:var(--muted-foreground); border-bottom:1px solid var(--border); }
 .measurements td { padding:12px 8px; border-bottom:1px solid var(--pink-track); }
@@ -205,3 +206,13 @@
  .result-header { align-items:flex-start; }.result-header .action-row { gap:4px; }.result-header .action-row button { font-size:10px; padding:0 9px; }.verdict { flex-wrap:wrap; gap:14px; }.verdict h2 { font-size:23px; }.verdict-stats { width:100%; margin-left:62px; justify-content:flex-start; gap:38px; }.verdict-stat { text-align:left; }.verdict-stat strong { font-size:23px; }.result-grid,.result-lower { grid-template-columns:1fr; }.stage { min-height:490px; }.canvas-wrap { height:300px; }.analysis-steps { justify-content:center; }.analysis-chip { font-size:10px; }.result-lower { gap:16px; }.patient-values { grid-template-columns:1fr 1fr; }.explanation-row { grid-template-columns:110px 1fr 40px; }.stage-callout p { font-size:11px; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
+@media(max-width:640px) {
+ .stage-title { gap:12px; padding:0 2px; }
+ .stage-title strong { font-size:12px; }
+ .stage-title span { font-size:9px; white-space:nowrap; }
+ .analysis-steps { gap:4px; }
+ .analysis-chip { padding:7px 5px; font-size:9px; }
+ .analysis-chip span { margin-right:3px; }
+ .result-header { flex-direction:column; }
+ .result-header .action-row { flex-wrap:nowrap; }
+}
