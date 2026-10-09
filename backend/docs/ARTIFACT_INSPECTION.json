@@ -1,0 +1,755 @@
+{
+  "metadata": {
+    "feature_names": [
+      "Age",
+      "Weight",
+      "Length",
+      "Sex",
+      "BMI",
+      "DM",
+      "HTN",
+      "Current Smoker",
+      "EX-Smoker",
+      "FH",
+      "Obesity",
+      "CRF",
+      "CVA",
+      "Airway disease",
+      "Thyroid Disease",
+      "DLP",
+      "BP",
+      "PR",
+      "Edema",
+      "Weak Peripheral Pulse",
+      "Lung rales",
+      "Systolic Murmur",
+      "Diastolic Murmur",
+      "Typical Chest Pain",
+      "Dyspnea",
+      "Function Class",
+      "Atypical",
+      "Nonanginal",
+      "Q Wave",
+      "St Elevation",
+      "St Depression",
+      "Tinversion",
+      "LVH",
+      "Poor R Progression",
+      "BBB",
+      "FBS",
+      "CR",
+      "TG",
+      "LDL",
+      "HDL",
+      "BUN",
+      "ESR",
+      "HB",
+      "K",
+      "Na",
+      "WBC",
+      "Lymph",
+      "Neut",
+      "PLT",
+      "EF-TTE",
+      "Region RWMA",
+      "VHD"
+    ],
+    "target_mapping": {
+      "Normal": 0,
+      "CAD": 1
+    },
+    "removed_features": [
+      "Cath",
+      "LAD",
+      "LCX",
+      "RCA",
+      "Exertional CP",
+      "LowTH Ang",
+      "CHF"
+    ],
+    "model": "XGBoost",
+    "test_accuracy": 0.8525,
+    "test_sensitivity": 0.9535,
+    "test_specificity": 0.6111,
+    "test_f1": 0.9011,
+    "test_roc_auc": 0.8902,
+    "cv_mean_roc_auc": 0.9248,
+    "cv_std_roc_auc": 0.018
+  },
+  "files": {
+    "CAD_XGBoost_Metadata.pkl": {
+      "sha256": "cfe1aa7f89600b2afdfd344e874af263246a09fb0fbda7af2402c93a42e62e40",
+      "bytes": 857
+    },
+    "CAD_Categorical_Encoders_1.pkl": {
+      "sha256": "f6bf62455295628383210f36af645e9f9c5c2d24346d3a0ffff6cbb5f892313a",
+      "bytes": 4430
+    },
+    "CAD_XGBoost_Model.pkl": {
+      "sha256": "8e05cfe48583c45c04013631c421bb20341242e6b2c6a45aa464dcf49097a16f",
+      "bytes": 101940
+    }
+  },
+  "model_type": "xgboost.sklearn.XGBClassifier",
+  "model_classes": [
+    0,
+    1
+  ],
+  "target_labels": {
+    "0": "Normal",
+    "1": "CAD"
+  },
+  "model_feature_count": 52,
+  "model_feature_order": [
+    "Age",
+    "Weight",
+    "Length",
+    "Sex",
+    "BMI",
+    "DM",
+    "HTN",
+    "Current Smoker",
+    "EX-Smoker",
+    "FH",
+    "Obesity",
+    "CRF",
+    "CVA",
+    "Airway disease",
+    "Thyroid Disease",
+    "DLP",
+    "BP",
+    "PR",
+    "Edema",
+    "Weak Peripheral Pulse",
+    "Lung rales",
+    "Systolic Murmur",
+    "Diastolic Murmur",
+    "Typical Chest Pain",
+    "Dyspnea",
+    "Function Class",
+    "Atypical",
+    "Nonanginal",
+    "Q Wave",
+    "St Elevation",
+    "St Depression",
+    "Tinversion",
+    "LVH",
+    "Poor R Progression",
+    "BBB",
+    "FBS",
+    "CR",
+    "TG",
+    "LDL",
+    "HDL",
+    "BUN",
+    "ESR",
+    "HB",
+    "K",
+    "Na",
+    "WBC",
+    "Lymph",
+    "Neut",
+    "PLT",
+    "EF-TTE",
+    "Region RWMA",
+    "VHD"
+  ],
+  "booster_version": [
+    3,
+    4,
+    1
+  ],
+  "encoders": {
+    "Sex": {
+      "type": "LabelEncoder",
+      "classes": [
+        "Fmale",
+        "Male"
+      ]
+    },
+    "Obesity": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "CRF": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "CVA": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Airway disease": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Thyroid Disease": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "DLP": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Weak Peripheral Pulse": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Lung rales": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Systolic Murmur": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Diastolic Murmur": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Dyspnea": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Atypical": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Nonanginal": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "LVH": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "Poor R Progression": {
+      "type": "LabelEncoder",
+      "classes": [
+        "N",
+        "Y"
+      ]
+    },
+    "BBB": {
+      "type": "LabelEncoder",
+      "classes": [
+        "LBBB",
+        "N",
+        "RBBB"
+      ]
+    },
+    "VHD": {
+      "type": "LabelEncoder",
+      "classes": [
+        "Moderate",
+        "N",
+        "Severe",
+        "mild"
+      ]
+    }
+  },
+  "feature_contract": [
+    {
+      "name": "Age",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Weight",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Length",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Sex",
+      "type": "categorical",
+      "allowed_values": [
+        "Fmale",
+        "Male"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "BMI",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "DM",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "HTN",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Current Smoker",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "EX-Smoker",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "FH",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Obesity",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "CRF",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "CVA",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Airway disease",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Thyroid Disease",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "DLP",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "BP",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "PR",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Edema",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Weak Peripheral Pulse",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Lung rales",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Systolic Murmur",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Diastolic Murmur",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Typical Chest Pain",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Dyspnea",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Function Class",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Atypical",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Nonanginal",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Q Wave",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "St Elevation",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "St Depression",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Tinversion",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "LVH",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Poor R Progression",
+      "type": "categorical",
+      "allowed_values": [
+        "N",
+        "Y"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "BBB",
+      "type": "categorical",
+      "allowed_values": [
+        "LBBB",
+        "N",
+        "RBBB"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "FBS",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "CR",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "TG",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "LDL",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "HDL",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "BUN",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "ESR",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "HB",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "K",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Na",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "WBC",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Lymph",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Neut",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "PLT",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "EF-TTE",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "Region RWMA",
+      "type": "numeric",
+      "required": true,
+      "data_type": "NEEDS_CONFIRMATION",
+      "range": "NEEDS_CONFIRMATION"
+    },
+    {
+      "name": "VHD",
+      "type": "categorical",
+      "allowed_values": [
+        "Moderate",
+        "N",
+        "Severe",
+        "mild"
+      ],
+      "required": true,
+      "data_type": "encoder label",
+      "range": "NEEDS_CONFIRMATION"
+    }
+  ],
+  "inspection_environment_versions": {
+    "xgboost": "3.4.1",
+    "scikit-learn": "1.6.1",
+    "pandas": "3.0.6",
+    "numpy": "2.5.3",
+    "joblib": "1.6.0"
+  },
+  "training_versions": {
+    "scikit-learn": "1.6.1 (serialized encoder state)",
+    "xgboost": "3.4.1 (serialized booster)",
+    "pandas": "NEEDS_CONFIRMATION",
+    "numpy": "NEEDS_CONFIRMATION",
+    "joblib": "NEEDS_CONFIRMATION"
+  },
+  "checks": {
+    "model_loaded": true,
+    "feature_count_and_order": true,
+    "class_mapping": true,
+    "all_encoder_roundtrips": true,
+    "golden_prediction": "NOT RUN: trusted dataset row and expected output not supplied"
+  }
+}
