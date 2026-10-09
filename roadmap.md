@@ -1,4 +1,8 @@
 # Frontend roadmap
+- [ ] Inspect backend PRD and all supplied trained artifacts; share mismatches and feature contract
+- [ ] Implement separate FastAPI service, validation, preprocessing, CORS, tests and deployment documentation
+- [ ] Connect existing frontend to real overall predictions without fabricated vessel outputs
+- [ ] Golden prediction verification — blocked on trusted original dataset row and Colab expected output
 - [x] Shared layout, four routes, safety copy and typed mock API
 - [x] Supplied heart, schematic selectable vessels and analysis animation
 - [x] Results, explanations, measurements and live what-if
