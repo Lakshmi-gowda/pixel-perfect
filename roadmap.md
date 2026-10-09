@@ -1,7 +1,7 @@
 # Frontend roadmap
 - [x] Inspect backend PRD and all supplied trained artifacts; share mismatches and feature contract
-- [ ] Confirm extracted feature contract — blocked on team approval required by backend PRD
-- [ ] Implement separate FastAPI service, validation, preprocessing, CORS, tests and deployment documentation — pending required contract confirmation
+- [x] Confirm extracted feature contract — approved; preserve saved labels and leave unrecorded clinical ranges unset
+- [ ] Implement separate FastAPI service, validation, preprocessing, CORS, tests and deployment documentation
 - [ ] Connect existing frontend to real overall predictions without fabricated vessel outputs
 - [ ] Golden prediction verification — blocked on trusted original dataset row and Colab expected output
 - [x] Shared layout, four routes, safety copy and typed mock API

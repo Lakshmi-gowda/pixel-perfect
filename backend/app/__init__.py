@@ -1,0 +1,1 @@
+"""Separately hosted CAD inference service."""

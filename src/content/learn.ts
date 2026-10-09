@@ -9,6 +9,6 @@ export const learnTopics = [
   { id: "arteries", title: "Meet the three arteries", text: Object.values(arteryDescriptions).join(" ") },
   { id: "stenosis", title: "What is stenosis?", text: "Stenosis means narrowing of an artery, typically caused by plaque buildup." },
   { id: "cad", title: "What is CAD?", text: "CAD means coronary artery disease. In this project's dataset, CAD is associated with at least 50% narrowing in one or more major coronary vessels." },
-  { id: "inputs", title: "What the app looks at", text: "Information like age, blood pressure, pulse, cholesterol, cardiac enzymes, and ECG and echo findings. The model uses these to estimate risk. It does not see inside the arteries." },
-  { id: "colours", title: "What the colours mean", text: "Teal means lower predicted risk, amber means moderate, and crimson means higher. Colours show the model's estimate, not a measured blockage. Every probability is also shown as a number and a band label. The preview cutoffs are provisional, not clinical standards." },
+  { id: "inputs", title: "What the app looks at", text: "The trained model uses 52 inputs, including Age, BP, PR, LDL, HDL, ECG-related inputs and EF-TTE. The exact saved names and categories appear in the assessment. Numeric units, clinical ranges and some encoded meanings remain unconfirmed. It does not see inside the arteries." },
+  { id: "colours", title: "What the colours mean", text: "The current trained model predicts overall CAD versus Normal only. It does not supply individual artery probabilities, so arteries remain neutral and no artery risk bands are applied. Coloured risk overlays belong to the explicitly labelled mock preview, not the trained overall model." },
 ];

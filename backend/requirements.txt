@@ -1,0 +1,9 @@
+# Serialized training versions recovered from the supplied artifacts:
+xgboost==3.4.1
+scikit-learn==1.6.1
+# Tested compatible versions; original Colab versions are NOT recorded:
+pandas==3.0.6
+numpy==2.5.3
+joblib==1.6.0
+fastapi==0.143.0
+uvicorn==0.54.0

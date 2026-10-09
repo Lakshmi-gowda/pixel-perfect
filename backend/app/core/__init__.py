@@ -1,0 +1,1 @@
+"""Configuration and safe API errors."""

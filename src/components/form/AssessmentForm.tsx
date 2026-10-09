@@ -15,7 +15,7 @@ export function AssessmentForm() {
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [sampleNotice, setSampleNotice] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => { if (!modelInfo) void loadModel(); }, [modelInfo, loadModel]);
+  useEffect(() => { if (!modelInfo && !error && status === "idle") void loadModel(); }, [modelInfo, loadModel, error, status]);
   const groups = useMemo(() => [...new Set(modelInfo?.features.map(f => f.group || (f.type === "categorical" ? "Categories" : "Measurements")) || [])], [modelInfo]);
   const fields = modelInfo?.features || [];
   const current = fields.filter(f => (f.group || (f.type === "categorical" ? "Categories" : "Measurements")) === groups[step]);
@@ -23,7 +23,7 @@ export function AssessmentForm() {
   const complete = fields.length - Object.keys(errors).length;
   const currentValid = current.every(f => !errors[f.name]);
   const valid = fields.length > 0 && Object.keys(errors).length === 0;
-  const update = (name: string, value: FeatureValue) => { setFormValues(v => ({ ...v, [name]: value })); };
+  const update = (name: string, value: FeatureValue) => { state.clearFieldError(name); setFormValues(v => ({ ...v, [name]: value })); };
   const submit = async () => {
     if (!valid) return;
     const result = await analyze(formValues);
@@ -35,6 +35,7 @@ export function AssessmentForm() {
     {error && <div className="message error" role="alert"><p>{error.message}</p><Button variant="outline" className="mt-3" onClick={() => { if (!modelInfo) void loadModel(); else void submit(); }}>Try again <RotateCcw /></Button></div>}
     {!modelInfo ? <div className="message" role="status">{error ? "Model information unavailable." : "Loading model inputs…"}</div> : <div className="assess-layout"><section className="panel">
       {USE_MOCK && <div className="preview-note"><strong>Development preview</strong><br />These {fields.length} example input definitions are not the final 52-feature schema. Names, units, categories and ranges need confirmation. No clinical ranges are assumed.</div>}
+      {!USE_MOCK && <div className="preview-note"><strong>Trained model inputs</strong><br />All {fields.length} inputs are required. Categories preserve the saved encoder labels exactly. Numeric units, clinical bounds and encoded clinical meanings remain unconfirmed.</div>}
       <div className="flex items-center justify-between"><p className="small-copy">Section {step + 1} of {groups.length}</p><p className="small-copy">{complete} / {fields.length} complete</p></div>
       <div className="progress-track" aria-label={`${complete} of ${fields.length} inputs complete`}>{groups.map((group, i) => <span className={i <= step ? "done" : ""} key={group} />)}</div>
       <nav className="step-nav" aria-label="Assessment sections">{groups.map((group, i) => <Button key={group} variant="ghost" size="sm" className={i === step ? "active" : ""} aria-current={i === step ? "step" : undefined} onClick={() => setStep(i)}>{i + 1}. {group}</Button>)}</nav>

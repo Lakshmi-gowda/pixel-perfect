@@ -135,6 +135,9 @@
 .verdict-icon { width:48px; height:48px; border-radius:12px; display:grid; place-items:center; background:var(--high-soft); color:var(--high); }
 .verdict.normal .verdict-icon { background:var(--low-soft); color:var(--low); }
 .verdict h2 { font-size:27px; margin-bottom:6px; }
+.verdict > div:nth-child(2) { min-width:0; flex:1; }
+.verdict > div:nth-child(2) .small-copy { overflow-wrap:anywhere; }
+.verdict-icon, .verdict-stats { flex-shrink:0; }
 .verdict-stats { margin-left:auto; display:flex; gap:32px; }
 .verdict-stat { text-align:right; }
 .verdict-stat strong { display:block; font-size:26px; font-variant-numeric:tabular-nums; }
