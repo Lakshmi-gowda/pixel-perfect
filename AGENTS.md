@@ -17,3 +17,5 @@
 - Centralize branding, disclaimers, risk cutoffs and editable medical copy in config/content modules so review and replacement stay consistent.
 - Keep Python service source and artifact inspection under backend/; never expose trained binaries through public/ or the browser bundle because model files are private server inputs.
 - Inspect serialized artifacts with an explicit allowed-class loader before implementing inference; do not run unrestricted deserialization because pickles can execute arbitrary code.
+- Mount the Python development proxy before TanStack SSR middleware and deny backend files in Vite filesystem serving; ordinary proxy configuration is intercepted by the page handler, and private artifacts must stay inaccessible.
+- Use an empty registry and HTTP 503 readiness on artifact-load failure; this prevents inference while keeping the health endpoint reachable for deployment checks.

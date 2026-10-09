@@ -4,6 +4,7 @@ import { ApiError, type FormValues, type ModelInfo, type Prediction, type Vessel
 
 function useAssessmentState() {
   const requestId = useRef(0);
+  const loadingModel = useRef(false);
   const [modelInfo, setModelInfo] = useState<ModelInfo>();
   const [formValues, setFormValues] = useState<FormValues>({});
   const [prediction, setPrediction] = useState<Prediction>();
@@ -12,8 +13,18 @@ function useAssessmentState() {
   const [error, setError] = useState<ApiError>();
   const [notice, setNotice] = useState("");
   const loadModel = useCallback(async () => {
-    setError(undefined);
-    try { setModelInfo(await getModelInfo()); } catch (e) { setError(e instanceof ApiError ? e : new ApiError("Model information is unavailable.")); }
+    if (loadingModel.current) return;
+    loadingModel.current = true;
+    setError(undefined); setStatus("loading");
+    try { setModelInfo(await getModelInfo()); setStatus("idle"); } catch (e) { setError(e instanceof ApiError ? e : new ApiError("Model information is unavailable.")); setStatus("error"); }
+    finally { loadingModel.current = false; }
+  }, []);
+  const clearFieldError = useCallback((name: string) => {
+    setError(previous => {
+      if (!previous?.fields[name]) return previous;
+      const fields = { ...previous.fields }; delete fields[name];
+      return Object.keys(fields).length ? new ApiError(previous.message, fields, previous.code) : undefined;
+    });
   }, []);
   const analyze = useCallback(async (values: FormValues, whatIf = false) => {
     const current = ++requestId.current;
@@ -30,7 +41,7 @@ function useAssessmentState() {
     } catch (e) { if (current !== requestId.current) return undefined; setError(e instanceof ApiError ? e : new ApiError("The prediction could not be read. Try again.")); setStatus("error"); return undefined; }
   }, []);
   const reset = useCallback(() => { requestId.current++; setFormValues({}); setPrediction(undefined); setSelectedVessel(null); setStatus("idle"); setError(undefined); setNotice(""); }, []);
-  return { modelInfo, formValues, setFormValues, prediction, selectedVessel, setSelectedVessel, status, setStatus, error, loadModel, analyze, reset, notice, setNotice };
+  return { modelInfo, formValues, setFormValues, prediction, selectedVessel, setSelectedVessel, status, setStatus, error, clearFieldError, loadModel, analyze, reset, notice, setNotice };
 }
 const AssessmentContext = createContext<ReturnType<typeof useAssessmentState> | null>(null);
 export function AssessmentProvider({ children }: { children: ReactNode }) {
