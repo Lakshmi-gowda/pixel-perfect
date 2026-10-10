@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { ApiError, excluded, safeFeatures, type ModelInfo, type FormValues, type Prediction } from "./types";
 import { mockModelInfo, mockPredict } from "./mock";
+import { modelBaseUrl, modelRequest } from "./transport";
+export { normalizeFieldErrors } from "./transport";
 
 export const USE_MOCK = import.meta.env['VITE_USE_MOCK'] === "true";
-const BASE_URL = (import.meta.env['VITE_API_BASE_URL'] || (import.meta.env.DEV ? "/model-api" : "")).replace(/\/$/, "");
 const probability = z.number().min(0).max(1);
 const attribution = z.array(z.object({ feature: z.string(), contribution: z.number() }));
 const predictionSchema = z.object({
@@ -14,29 +15,25 @@ const predictionSchema = z.object({
 });
 export const infoSchema = z.object({ features: z.array(z.object({ name: z.string(), label: z.string().optional(), type: z.enum(["numeric", "number", "integer", "categorical"]).transform(type => type === "numeric" ? "number" as const : type), group: z.string().optional(), allowed_values: z.array(z.union([z.string(), z.number()])).optional(), min: z.number().optional(), max: z.number().optional(), unit: z.string().optional(), required: z.boolean().optional() })), model_version: z.string(), classes: z.array(z.string()).optional() });
 
-export function normalizeFieldErrors(value: unknown): Record<string, string> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  return Object.fromEntries(Object.entries(value).map(([name, reasons]) => [name, Array.isArray(reasons) ? reasons.filter(r => typeof r === "string").join(" ") : typeof reasons === "string" ? reasons : "Invalid value."]));
-}
-
 async function request(path: string, body?: unknown) {
-  if (!BASE_URL) throw new ApiError("The model service is not connected yet. Set the API address to connect it.", {}, "model_unavailable");
-  let response: Response;
-  try {
-    response = await fetch(`${BASE_URL}${path}`, { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json" }, ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(20000) });
-  } catch { throw new ApiError("The model service could not be reached. Check the connection and try again.", {}, "offline"); }
-  let json;
-  try { json = await response.json(); } catch { throw new ApiError("The model service returned an unreadable response."); }
-  if (!response.ok || json.success === false) throw new ApiError(json.error?.message || "The model service could not complete the request.", normalizeFieldErrors(json.error?.fields), json.error?.code || "unknown");
-  return json.data ?? json;
+  return modelRequest(modelBaseUrl(import.meta.env['VITE_API_BASE_URL'], import.meta.env.DEV), path, body);
 }
 export async function getModelInfo(): Promise<ModelInfo> {
-  const data = USE_MOCK ? mockModelInfo : infoSchema.parse(await request("/model-info"));
+  const parsed = USE_MOCK ? { success: true as const, data: mockModelInfo } : infoSchema.safeParse(await request("/model-info"));
+  if (!parsed.success) throw new ApiError("The model service returned incompatible input definitions. Check its /model-info contract.", {}, "invalid_model_info");
+  const data = parsed.data;
   const features = data.features.filter(f => !excluded.has(f.name.toLowerCase()));
   if (!USE_MOCK && (features.length !== 52 || new Set(features.map(f => f.name)).size !== 52)) throw new ApiError("The model service returned an unexpected input contract.");
+  if (!USE_MOCK && (features.filter(f => f.type === "categorical").length !== 18 || features.some(f => f.type === "categorical" && !f.allowed_values?.length))) throw new ApiError("The model service must provide all 18 saved categorical definitions.", {}, "invalid_model_info");
   return { ...data, features };
 }
 export async function predict(values: FormValues): Promise<Prediction> {
   const features = safeFeatures(values);
-  return USE_MOCK ? mockPredict(features) : predictionSchema.parse(await request("/predict", { features }));
+  if (USE_MOCK) return mockPredict(features);
+  const info = await getModelInfo();
+  const expected = new Set(info.features.map(f => f.name));
+  if (Object.keys(features).length !== 52 || Object.keys(features).some(name => !expected.has(name))) throw new ApiError("Provide all 52 model inputs with their exact saved names before analyzing.", {}, "invalid_features");
+  const result = predictionSchema.safeParse(await request("/predict", { features }));
+  if (!result.success) throw new ApiError("The model service returned incompatible prediction data.", {}, "invalid_prediction");
+  return result.data;
 }
