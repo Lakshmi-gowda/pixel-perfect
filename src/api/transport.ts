@@ -40,9 +40,9 @@ export async function modelRequest(base: string, path: string, body?: unknown): 
   let json: unknown;
   try { json = JSON.parse(text); } catch { throw new ApiError(`The model service returned invalid JSON (${status}). Check the Python service logs.`, {}, "invalid_json"); }
   if (!object(json)) throw new ApiError(`The model service returned an invalid response (${status}).`, {}, "invalid_response");
-  if (!response.ok || json.success === false) {
-    const error = object(json.error) ? json.error : {};
-    throw new ApiError(typeof error.message === "string" ? error.message : `The model service could not complete the request (${status}).`, normalizeFieldErrors(error.fields), typeof error.code === "string" ? error.code : "http_error");
+  if (!response.ok || json['success'] === false) {
+    const error = object(json['error']) ? json['error'] : {};
+    throw new ApiError(typeof error['message'] === "string" ? error['message'] : `The model service could not complete the request (${status}).`, normalizeFieldErrors(error['fields']), typeof error['code'] === "string" ? error['code'] : "http_error");
   }
-  return json.data ?? json;
+  return json['data'] ?? json;
 }
