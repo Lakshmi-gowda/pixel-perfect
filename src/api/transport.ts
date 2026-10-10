@@ -27,7 +27,7 @@ export async function modelRequest(base: string, path: string, body?: unknown): 
     response = await fetch(`${base}${path}`, { method: body === undefined ? "GET" : "POST", headers: body === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(20000), credentials: "omit" });
     text = await response.text();
   } catch (error) {
-    if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) throw new ApiError("The model service timed out. It may be starting up; try again shortly.", {}, "timeout");
+    if (typeof error === "object" && error !== null && "name" in error && (error.name === "TimeoutError" || error.name === "AbortError")) throw new ApiError("The model service timed out. It may be starting up; try again shortly.", {}, "timeout");
     throw new ApiError("The model service could not be reached. Check its address, service availability, and allowed website origins.", {}, "offline");
   }
   const status = `HTTP ${response.status}`;
