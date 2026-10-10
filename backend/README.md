@@ -36,6 +36,14 @@ Startup loads the artifacts once per worker into the `cad` model registry and ch
 
 ## Frontend connection
 
+### Connection diagnosis (2026-10-10)
+
+No deployed Python service URL has been supplied or verified. Requests to the hosted preview's `/model-api/health`, `/model-api/model-info` and `/model-api/predict` returned HTTP 401 plain-text `Unauthorized` from preview access control, not FastAPI. This does not prove a Python deployment exists. `/model-api` is only a Vite development proxy: it is not included in hosted builds. The local Python process was also stopped when rechecked; the development proxy correctly returned JSON HTTP 503.
+
+The previous client attempted `response.json()` on every response, obscuring website fallbacks, access-control pages and empty responses behind “unreadable response.” The client now validates hosted HTTPS configuration, content type, HTTP status and response shape and distinguishes connection failures and timeouts. The supplied frontend code already maps all 52 model inputs (34 numeric, 18 categorical); seven fields belong only to the explicitly selected mock adapter.
+
+To complete hosted integration: deploy this `backend/` Docker build context with private artifacts to a Python/container host, wait for `/health` to return JSON HTTP 200, set `ENV=production` and `CORS_ORIGINS` to the exact frontend origin, then set frontend `VITE_USE_MOCK=false` and `VITE_API_BASE_URL` to that service's absolute HTTPS URL and update the frontend deployment. Do not set it to the preview URL or `/model-api`. No production model loading or end-to-end prediction verification is claimed without that host and a trusted original row/reference.
+
 Development uses the existing Vite server’s `/model-api` proxy to `127.0.0.1:8000` and `VITE_USE_MOCK=false`. This proxy and the locally started Python process are **development only**, not a deployed Python host. Start both services for local use. For the published frontend set `VITE_API_BASE_URL` to the deployed Python service’s absolute **HTTPS** URL, keep mock mode false, and rebuild/redeploy the frontend. If the address is missing, the frontend shows an unavailable error rather than using fake results. Configure `CORS_ORIGINS` with the exact published/preview frontend origins; never `*`. No cookies, credentials or private browser API keys are required.
 
 The API client translates `numeric` into existing numeric controls and joins field-error arrays into readable inline messages. The exact 52 inputs replace the old seven mock inputs when metadata loads. Overall CAD/Normal results display in the existing layout; arteries remain neutral, explanations unavailable, and sliders disabled because no ranges are supplied.
