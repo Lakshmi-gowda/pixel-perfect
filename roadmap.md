@@ -1,4 +1,6 @@
 # Frontend roadmap
+- [x] Diagnose hosted connection failure and harden non-JSON, HTTP, timeout and configuration errors
+- [x] Reverify artifacts, 52-feature mapping and browser connection; record local versus hosted status without fabricated predictions
 - [x] Inspect backend PRD and all supplied trained artifacts; share mismatches and feature contract
 - [x] Confirm extracted feature contract — approved; preserve saved labels and leave unrecorded clinical ranges unset
 - [x] Implement separate FastAPI service, validation, preprocessing, CORS, tests and deployment documentation

@@ -11,6 +11,7 @@
 
 - Keep the existing TanStack Start routing/bootstrap and frontend design; host Python inference separately because the app runtime cannot execute FastAPI or native XGBoost.
 - Route all model requests through src/api; switch the mock adapter by VITE_USE_MOCK so the future external service can replace it without UI changes.
+- Validate model service URLs and HTTP/JSON responses in src/api/transport.ts; production must use an absolute HTTPS Python address so website fallback pages cannot masquerade as model responses.
 - Keep shared assessment state in one React context with no browser storage so refresh clears patient values.
 - Load the Three.js scene lazily after hydration and unmount it on page changes so SSR stays browser-safe and only one canvas exists.
 - Derive form controls and validation from model metadata; filter forbidden target fields at both metadata and request boundaries to prevent leakage.
