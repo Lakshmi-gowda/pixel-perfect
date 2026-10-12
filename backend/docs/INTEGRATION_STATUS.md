@@ -1,37 +1,40 @@
-# Integration verification — 2026-10-10
+# Integration verification — 2026-10-12
 
-## Root cause
+## Deployed backend (single source of truth)
 
-The frontend has no configured deployed Python HTTPS URL. `/model-api` is a development-only Vite proxy, not a hosted Python endpoint. The previous API parser attempted JSON parsing without checking content type, hiding website/access-control responses behind “unreadable response.” The local Python process was also stopped at initial inspection (connection refused); the development proxy returned a valid JSON 503 error.
+The frontend now targets the externally deployed Antigravity backend:
+`https://cad-backend-1-k0xp.onrender.com` (set in `.env.development`, `.env.production`, `.env.example`; `VITE_USE_MOCK=false`). The earlier Lovable-generated service under `backend/` is retained as reference source only and is no longer used by the frontend.
 
-Unauthenticated requests to all three hosted preview `/model-api` paths returned HTTP 401 `text/plain` from preview access control. No deployed Python environment is accessible or verified. Do not interpret a preview access response as a FastAPI response.
+## Verified against the deployed service (2026-10-12)
+
+- `GET /health`: 200 `{"success":true,"data":{"status":"ok","model_loaded":true}}`.
+- `GET /model-info`: 200, 52 features — 34 numeric, 18 categorical with saved labels (`Fmale`/`Male`, `N`/`Y`, `LBBB`/`N`/`RBBB`, `Moderate`/`N`/`Severe`/`mild`). Matches the trained artifact contract exactly.
+- `POST /predict` with a complete 52-feature body: 200, `{"prediction":"CAD","probabilities":{"CAD":0.7821…,"Normal":0.2178…},"model_version":"1.0.0","disclaimer":"…"}`.
+- `POST /predict` with missing features: `{"success":false,"error":{"code":"VALIDATION_ERROR","fields":{"missing_features":[…]}}}` — parsed by the frontend error handler.
+- Response envelope `{success, data}` matches the frontend transport; no client changes were needed beyond the base URL.
+
+## Blocker: CORS
+
+The deployed backend rejects browser preflights from the frontend origins with HTTP 400 `Disallowed CORS origin` (tested for `http://localhost:8080` and the Lovable preview origin). Server-to-server requests succeed, so the service itself is healthy.
+
+Required fix in the Antigravity backend CORS configuration — allow:
+
+- `http://localhost:8080` (development preview)
+- `https://id-preview--4711e78b-8b24-4fd5-9d46-b7e957db5cb3.lovable.app` (Lovable preview)
+- The published `*.lovable.app` origin once published (or the custom domain)
+
+Browser check after wiring: the assessment page reached the deployed URL and showed the clear "model service could not be reached … allowed website origins" message instead of the previous vague errors. No page errors.
 
 ## Status checklist
 
 | Item | Status | Evidence / next action |
 |---|---|---|
-| Backend implementation complete | Yes | Source, Docker setup and existing endpoint/validation suite present; 32 tests passed, one golden test skipped. |
-| Backend deployed and reachable | No | No Python host URL supplied/configured. Deploy `backend/` privately on a Python/container host with the three artifacts and wait for JSON HTTP 200 `/health`. |
-| All three artifacts loaded | Yes, locally only | Restricted loader and startup checks passed in the fresh Python environment; hosted loading remains unverified. |
-| All 52 features correctly mapped | Yes, structural contract | Browser controls match every metadata name: 34 numeric and 18 categorical. All saved category options match exactly; model ordering and encoder round-trips passed. Clinical meanings/units/ranges remain unconfirmed. |
-| Frontend connected to correct backend URL | No for hosted frontend; Yes locally | Local `/model-api` requests reach Python. Set `VITE_API_BASE_URL` to the deployed absolute HTTPS address, keep `VITE_USE_MOCK=false`, allow the exact frontend origin in `CORS_ORIGINS`, then update the frontend deployment. |
-| End-to-end prediction verified | No | No trusted original patient row and independent expected Colab output provided. Supply those and run the golden test plus the browser assessment flow against the deployed service. |
+| Backend deployed and reachable | Yes (server-to-server) | `/health` and `/predict` return JSON 200 from curl. |
+| All 52 features correctly mapped | Yes | Deployed `/model-info` matches artifact contract: 34 numeric, 18 categorical, exact saved labels. |
+| Frontend connected to correct backend URL | Yes, configured | Base URL set to the Antigravity service in all env files; mock disabled. |
+| Browser end-to-end prediction | Blocked on backend CORS | Add the origins above to the Antigravity service, then re-run the browser assessment flow. |
+| Golden prediction verification | No | Still needs a trusted original patient row and independent expected Colab output. |
 
-## Observed local endpoints and browser
+## Still outstanding
 
-- `GET /health`: 200 `application/json`, model loaded true.
-- `GET /model-info`: 200 `application/json`, 52 required features.
-- `POST /predict` with deliberately empty inputs: 422 `application/json`, all missing fields reported. This is a validation check, not successful inference.
-- CORS preflight: 200, exact allowed origin `http://localhost:8080`.
-- Assessment loads actual model metadata with 34 numeric controls and 18 saved-category selectors; Analyze is disabled without the required patient values.
-- A simulated HTML 502 connection failure shows a useful website-versus-model error; Try again recovers actual metadata. No browser page errors observed; screenshots inspected for preserved design and readable errors.
-- Frontend tests: 15 passed, including transport configuration, HTML/plain text, empty/malformed JSON, HTTP errors, timeouts and offline behavior. Existing mock unit tests exercise only the isolated development adapter; no mock prediction was used to verify real inference.
-- Pinned XGBoost 3.4.1, pandas 3.0.6, NumPy 2.5.3 and FastAPI 0.143.0 were available on PyPI and installed successfully. Do not claim they are unavailable based on an outdated version catalogue.
-
-## Required team clarification
-
-See `FEATURES.md` for every exact field and saved category. Numeric units, training encodings, original numeric types and clinically valid constraints were not supplied for these 34 fields:
-
-Age, Weight, Length, BMI, DM, HTN, Current Smoker, EX-Smoker, FH, BP, PR, Edema, Typical Chest Pain, Function Class, Q Wave, St Elevation, St Depression, Tinversion, FBS, CR, TG, LDL, HDL, BUN, ESR, HB, K, Na, WBC, Lymph, Neut, PLT, EF-TTE, Region RWMA.
-
-Provide the training data dictionary for these fields, especially encoded clinical variables, and a trusted complete row with independent reference probabilities. No units, binary meanings, clinical ranges, imputation or patient records were invented. XGBoost 3.4.1 and scikit-learn 1.6.1 are recovered serialization versions; original pandas/NumPy/joblib versions remain unknown.
+Numeric units, training encodings and clinical ranges for the 34 numeric fields remain unconfirmed (see `FEATURES.md`). No units, binary meanings, ranges or patient records were invented.
