@@ -5,7 +5,8 @@
 - [x] Confirm extracted feature contract — approved; preserve saved labels and leave unrecorded clinical ranges unset
 - [x] Implement separate FastAPI service, validation, preprocessing, CORS, tests and deployment documentation
 - [x] Wire existing frontend to real service contract, disable mock default, preserve neutral unavailable vessel states; verify metadata and error recovery locally
-- [ ] Hosted frontend connection — blocked on separately deployed HTTPS Python service URL
+- [x] Connect frontend to deployed Antigravity backend (https://cad-backend-1-k0xp.onrender.com); contract verified against artifacts
+- [ ] Browser end-to-end prediction — blocked on Antigravity backend CORS allowing the Lovable preview/published origins
 - [ ] Golden prediction verification — blocked on trusted original dataset row and Colab expected output
 - [x] Shared layout, four routes, safety copy and typed mock API
 - [x] Supplied heart, schematic selectable vessels and analysis animation
