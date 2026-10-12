@@ -3,36 +3,35 @@
 ## Deployed backend (single source of truth)
 
 The frontend now targets the externally deployed Antigravity backend:
-`https://cad-backend-1-k0xp.onrender.com` (set in `.env.development`, `.env.production`, `.env.example`; `VITE_USE_MOCK=false`). The earlier Lovable-generated service under `backend/` is retained as reference source only and is no longer used by the frontend.
+`https://cad-backend-2.onrender.com` (set in `.env.development`, `.env.production`, `.env.example`; `VITE_USE_MOCK=false`). The earlier Lovable-generated service under `backend/` is retained as reference source only and is no longer used by the frontend.
 
 ## Verified against the deployed service (2026-10-12)
 
-- `GET /health`: 200 `{"success":true,"data":{"status":"ok","model_loaded":true}}`.
-- `GET /model-info`: 200, 52 features — 34 numeric, 18 categorical with saved labels (`Fmale`/`Male`, `N`/`Y`, `LBBB`/`N`/`RBBB`, `Moderate`/`N`/`Severe`/`mild`). Matches the trained artifact contract exactly.
-- `POST /predict` with a complete 52-feature body: 200, `{"prediction":"CAD","probabilities":{"CAD":0.7821…,"Normal":0.2178…},"model_version":"1.0.0","disclaimer":"…"}`.
-- `POST /predict` with missing features: `{"success":false,"error":{"code":"VALIDATION_ERROR","fields":{"missing_features":[…]}}}` — parsed by the frontend error handler.
-- Response envelope `{success, data}` matches the frontend transport; no client changes were needed beyond the base URL.
+- `GET /health/live`: HTTP 200, `{"success":true,"data":{"status":"ok"}}`.
+- `GET /health`: HTTP 200, `{"success":true,"data":{"status":"ok","model_loaded":true}}`.
+- `GET /model-info`: HTTP 200, 52 features — 34 numeric, 18 categorical with exact saved labels (`Fmale`/`Male`, `N`/`Y`, `LBBB`/`N`/`RBBB`, `Moderate`/`N`/`Severe`/`mild`). Matches the trained artifact contract.
+- `GET /openapi.json`: HTTP 200. `/predict` accepts `{features: {...}}`; `PredictData` specifies prediction, probabilities, model_version and disclaimer inside the success envelope.
+- Numeric metadata returns `allowed_values: null`. The frontend previously rejected this nullable property; the adapter now normalizes it to undefined without modifying names, labels or clinical bounds. Regression test passes.
+- `POST /predict` with `{features:{}}`: HTTP 422, `{"success":false,"error":{"code":"VALIDATION_ERROR","message":"Input feature validation failed","fields":{"missing_features":[…]}}}`. All 52 missing names are reported. This is an intentional invalid-request test, not a successful inference.
+- No complete patient submission was made to this deployment: no authentic 52-feature patient row was supplied. Earlier prediction evidence concerned the previous deployment and is not verification of this one.
 
-## Blocker: CORS
+## Browser access verified
 
-The deployed backend rejects browser preflights from the frontend origins with HTTP 400 `Disallowed CORS origin` (tested for `http://localhost:8080` and the Lovable preview origin). Server-to-server requests succeed, so the service itself is healthy.
+Both local and exact Lovable preview-origin preflights return HTTP 200 with the matching `Access-Control-Allow-Origin`, POST permission and content-type permission. Chromium read real JSON from all four GET endpoints and the HTTP 422 prediction response from both origins, without CORS errors.
 
-Required fix in the Antigravity backend CORS configuration — allow:
+The local running frontend rendered all 34 numeric controls and 18 saved-category selectors with mock mode off. Every observed model request targeted the new Render URL, not `/model-api`, localhost inference or the reference backend. Empty inputs keep Analyze disabled. No page errors occurred.
 
-- `http://localhost:8080` (development preview)
-- `https://id-preview--4711e78b-8b24-4fd5-9d46-b7e957db5cb3.lovable.app` (Lovable preview)
-- The published `*.lovable.app` origin once published (or the custom domain)
-
-Browser check after wiring: the assessment page reached the deployed URL and showed the clear "model service could not be reached … allowed website origins" message instead of the previous vague errors. No page errors.
+For the exact preview-origin CORS check, a minimal browser document was served at `https://id-preview--4711e78b-8b24-4fd5-9d46-b7e957db5cb3.lovable.app` to isolate CORS from editor access control. All Render requests and responses were real and unintercepted; this does not claim the hosted frontend itself was exercised. A future published/custom origin remains untested.
 
 ## Status checklist
 
 | Item | Status | Evidence / next action |
 |---|---|---|
-| Backend deployed and reachable | Yes (server-to-server) | `/health` and `/predict` return JSON 200 from curl. |
+| Backend deployed and reachable | Yes | Browser `/health` returns JSON 200 with model_loaded true. |
 | All 52 features correctly mapped | Yes | Deployed `/model-info` matches artifact contract: 34 numeric, 18 categorical, exact saved labels. |
 | Frontend connected to correct backend URL | Yes, configured | Base URL set to the Antigravity service in all env files; mock disabled. |
-| Browser end-to-end prediction | Blocked on backend CORS | Add the origins above to the Antigravity service, then re-run the browser assessment flow. |
+| Browser access and form metadata | Passed | Both origins can read real JSON; form displays 52 controls, no mock badge. |
+| Successful browser end-to-end prediction | Not verified | Requires an authentic complete 52-feature row; none supplied. Empty submission correctly returns HTTP 422. |
 | Golden prediction verification | No | Still needs a trusted original patient row and independent expected Colab output. |
 
 ## Still outstanding

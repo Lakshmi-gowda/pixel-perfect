@@ -13,7 +13,7 @@ const predictionSchema = z.object({
   contributions: z.object({ LAD: attribution.optional(), LCX: attribution.optional(), RCA: attribution.optional(), overall: attribution.optional() }).optional(),
   disclaimer: z.string().optional(), model_version: z.string(),
 });
-export const infoSchema = z.object({ features: z.array(z.object({ name: z.string(), label: z.string().optional(), type: z.enum(["numeric", "number", "integer", "categorical"]).transform(type => type === "numeric" ? "number" as const : type), group: z.string().optional(), allowed_values: z.array(z.union([z.string(), z.number()])).optional(), min: z.number().optional(), max: z.number().optional(), unit: z.string().optional(), required: z.boolean().optional() })), model_version: z.string(), classes: z.array(z.string()).optional() });
+export const infoSchema = z.object({ features: z.array(z.object({ name: z.string(), label: z.string().optional(), type: z.enum(["numeric", "number", "integer", "categorical"]).transform(type => type === "numeric" ? "number" as const : type), group: z.string().optional(), allowed_values: z.array(z.union([z.string(), z.number()])).nullish().transform(values => values ?? undefined), min: z.number().optional(), max: z.number().optional(), unit: z.string().optional(), required: z.boolean().optional() })), model_version: z.string(), classes: z.array(z.string()).optional() });
 
 async function request(path: string, body?: unknown) {
   return modelRequest(modelBaseUrl(import.meta.env['VITE_API_BASE_URL'], import.meta.env.DEV), path, body);
