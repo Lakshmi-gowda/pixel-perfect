@@ -5,7 +5,8 @@
 - [x] Confirm extracted feature contract — approved; preserve saved labels and leave unrecorded clinical ranges unset
 - [x] Implement separate FastAPI service, validation, preprocessing, CORS, tests and deployment documentation
 - [x] Wire existing frontend to real service contract, disable mock default, preserve neutral unavailable vessel states; verify metadata and error recovery locally
-- [x] Connect frontend to updated Render backend (https://cad-backend-2.onrender.com); health and preview-origin CORS verified
+- [x] Connect frontend to updated Render backend (https://cad-backend-ic3e.onrender.com); health, model-info, CORS verified; artery_predictions mapped to vessel display
+- [ ] Backend: make artery-only inputs (CHF, Exertional CP, LowTH Ang, Cath) optional so /predict accepts the 52-feature CAD contract — Cath is the diagnosis target and must not be sent as input
 - [x] Verify updated deployed metadata, prediction schema, CORS and actual form loading; normalize nullable category lists
 - [ ] Successful browser assessment-to-results prediction on updated Render deployment — blocked on a supplied authentic complete 52-feature row; invalid request verified as HTTP 422
 - [ ] Golden prediction verification — blocked on trusted original dataset row and Colab expected output
