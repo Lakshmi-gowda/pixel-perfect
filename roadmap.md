@@ -1,4 +1,5 @@
 # Frontend roadmap
+- [ ] Inspect and integrate current https://cad-backend-2.onrender.com deployment: separate verified CAD/artery contracts, real responses and full browser flow
 - [x] Diagnose hosted connection failure and harden non-JSON, HTTP, timeout and configuration errors
 - [x] Reverify artifacts, 52-feature mapping and browser connection; record local versus hosted status without fabricated predictions
 - [x] Inspect backend PRD and all supplied trained artifacts; share mismatches and feature contract
