@@ -37,3 +37,11 @@ For the exact preview-origin CORS check, a minimal browser document was served a
 ## Still outstanding
 
 Numeric units, training encodings and clinical ranges for the 34 numeric fields remain unconfirmed (see `FEATURES.md`). No units, binary meanings, ranges or patient records were invented.
+
+## 2026-10-13 — cad-backend-ic3e.onrender.com (artery models)
+
+- /health, /model-info: 200. CAD model 52 features; artery models LAD/LCX/RCA loaded, 56 features each, classes Normal/Stenotic.
+- CORS preflight passes for localhost:8080 and the Lovable preview origin.
+- /predict with all 56 features returns overall CAD probabilities plus artery_predictions {LAD, LCX, RCA} with stenotic_probability and predicted_class.
+- BLOCKER (backend-side): /predict rejects the 52-feature CAD contract with 422 VALIDATION_ERROR, demanding CHF, Exertional CP, LowTH Ang and Cath as inputs. Cath is the diagnosis target — sending it would be target leakage, so the frontend will not send it. Backend must make the four artery-only features optional (skip artery predictions when absent) or accept a separate artery endpoint.
+- Frontend: env URLs updated to cad-backend-ic3e; prediction adapter maps artery_predictions to vessel probabilities; form copy updated. 15 tests pass, build OK.
