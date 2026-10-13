@@ -37,5 +37,7 @@ export async function predict(values: FormValues): Promise<Prediction> {
   if (Object.keys(features).length !== 52 || Object.keys(features).some(name => !expected.has(name))) throw new ApiError("Provide all 52 model inputs with their exact saved names before analyzing.", {}, "invalid_features");
   const result = predictionSchema.safeParse(await request("/predict", { features }));
   if (!result.success) throw new ApiError("The model service returned incompatible prediction data.", {}, "invalid_prediction");
-  return result.data;
+  const { artery_predictions, ...rest } = result.data;
+  const vessels = rest.vessels ?? (artery_predictions ? Object.fromEntries(Object.entries(artery_predictions).map(([id, a]) => [id, a?.stenotic_probability])) : undefined);
+  return { ...rest, vessels };
 }
