@@ -7,8 +7,10 @@ export { normalizeFieldErrors } from "./transport";
 export const USE_MOCK = import.meta.env['VITE_USE_MOCK'] === "true";
 const probability = z.number().min(0).max(1);
 const attribution = z.array(z.object({ feature: z.string(), contribution: z.number() }));
+const artery = z.object({ stenotic_probability: probability, predicted_class: z.string().optional() });
 const predictionSchema = z.object({
   prediction: z.enum(["CAD", "Normal"]), probabilities: z.object({ CAD: probability, Normal: probability }),
+  artery_predictions: z.object({ LAD: artery.optional(), LCX: artery.optional(), RCA: artery.optional() }).optional(),
   vessels: z.object({ LAD: probability.optional(), LCX: probability.optional(), RCA: probability.optional() }).optional(),
   contributions: z.object({ LAD: attribution.optional(), LCX: attribution.optional(), RCA: attribution.optional(), overall: attribution.optional() }).optional(),
   disclaimer: z.string().optional(), model_version: z.string(),
