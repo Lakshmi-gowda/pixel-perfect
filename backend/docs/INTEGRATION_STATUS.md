@@ -1,5 +1,20 @@
 # Integration verification — 2026-10-12
 
+## Current verification — 2026-10-13, updated cad-backend-2 deployment
+
+- Frontend development, production and example configurations use only `https://cad-backend-2.onrender.com`, mock mode off; retained Python source is not used.
+- `/health`: HTTP 200. CAD, LAD, LCX and RCA all report loaded, with 52/55/55/55 features respectively and no load errors.
+- `/model-info` and `/openapi.json`: HTTP 200. CAD has 34 numeric and 18 categorical inputs. Arteries share those inputs plus CHF (`N`/`Y`), Exertional CP (`N`), and LowTH Ang (`N`/`Y`). Cath/LAD/LCX/RCA are absent from both contracts. The previous 56-feature/target-leakage blocker is resolved in this deployment.
+- Verified endpoint: `POST /predict` accepts `{cad_features: {...52 inputs}, artery_features: {...55 inputs}}`. Response data nests `cad_prediction` and `artery_predictions`; no separate per-artery endpoint is documented or invented.
+- Existing form now renders the union of 55 verified inputs with the same design; the API adapter selects each model's exact names independently. Nested CAD and artery outputs map into the existing result displays. Missing CAD output is an error; missing artery scores remain unavailable, never fabricated.
+- Browser verification: 34 numeric controls and 21 saved-category selectors, all three extra fields present, zero forbidden target controls, no page errors. Actual Render requests are used throughout.
+- Exact preview-origin preflight passes. Chromium can read HTTP 200 health JSON from that origin (minimal document used to isolate access-control from CORS; no hosted-app end-to-end claim).
+- Invalid `POST /predict` with both empty feature objects returns HTTP 422 `VALIDATION_ERROR`, listing missing CAD features. This confirms request parsing and error visibility, not successful inference.
+- 16 targeted frontend tests pass, including separate request selection, target exclusion, nested result parsing, missing outputs and transport errors; preview build reports OK.
+- **Not complete:** no authentic complete 55-input patient row has been supplied. Successful deployed prediction and assessment-to-results display of all four actual outputs remain unverified. No synthetic patient row was submitted. Independent golden verification still requires trusted reference probabilities.
+
+The sections below are historical checks, not evidence for the current deployment.
+
 ## Deployed backend (single source of truth)
 
 The frontend now targets the externally deployed Antigravity backend:
