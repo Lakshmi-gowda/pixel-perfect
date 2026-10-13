@@ -6,7 +6,6 @@ export { normalizeFieldErrors } from "./transport";
 
 export const USE_MOCK = import.meta.env['VITE_USE_MOCK'] === "true";
 const probability = z.number().min(0).max(1);
-const attribution = z.array(z.object({ feature: z.string(), contribution: z.number() }));
 const artery = z.object({ stenotic_probability: probability, predicted_class: z.string().optional() });
 const cadPredictionSchema = z.object({
   prediction: z.enum(["CAD", "Normal"]), probabilities: z.object({ CAD: probability, Normal: probability }),
