@@ -15,6 +15,7 @@
 - Keep shared assessment state in one React context with no browser storage so refresh clears patient values.
 - Load the Three.js scene lazily after hydration and unmount it on page changes so SSR stays browser-safe and only one canvas exists.
 - Derive form controls and validation from model metadata; filter forbidden target fields at both metadata and request boundaries to prevent leakage.
+- Preserve separate CAD and artery feature definitions in model metadata; submit exact per-model objects and normalize nested predictions in the API adapter so one shared form and existing result displays remain unchanged.
 - Centralize branding, disclaimers, risk cutoffs and editable medical copy in config/content modules so review and replacement stay consistent.
 - Keep Python service source and artifact inspection under backend/; never expose trained binaries through public/ or the browser bundle because model files are private server inputs.
 - Inspect serialized artifacts with an explicit allowed-class loader before implementing inference; do not run unrestricted deserialization because pickles can execute arbitrary code.

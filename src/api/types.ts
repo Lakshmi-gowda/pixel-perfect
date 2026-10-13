@@ -14,7 +14,7 @@ export interface FeatureDefinition {
   required?: boolean | undefined;
   confirmation?: string | undefined;
 }
-export interface ModelInfo { features: FeatureDefinition[]; model_version: string; classes?: string[] | undefined }
+export interface ModelInfo { features: FeatureDefinition[]; cadFeatures?: FeatureDefinition[] | undefined; arteryFeatures?: FeatureDefinition[] | undefined; model_version: string; classes?: string[] | undefined }
 export interface Contribution { feature: string; contribution: number }
 export interface Prediction {
   prediction: "CAD" | "Normal";
@@ -29,7 +29,7 @@ export class ApiError extends Error {
 }
 export const excluded = new Set(["cath", "lad", "lcx", "rca"]);
 export function safeFeatures(values: FormValues): FormValues {
-  return Object.fromEntries(Object.entries(values).filter(([name]) => !excluded.has(name.toLowerCase())));
+  return Object.fromEntries(Object.entries(values).filter(([name]) => !excluded.has(name.trim().toLowerCase())));
 }
 export function validateFeature(f: FeatureDefinition, value: FeatureValue | undefined): string | undefined {
   if (value === undefined || value === "") return f.required === false ? undefined : "This measurement is required.";
