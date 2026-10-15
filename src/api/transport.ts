@@ -20,11 +20,11 @@ export function normalizeFieldErrors(value: unknown): Record<string, string> {
 
 const object = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 
-export async function modelRequest(base: string, path: string, body?: unknown): Promise<unknown> {
+export async function modelRequest(base: string, path: string, body?: unknown, timeoutMs = 20000): Promise<unknown> {
   let response: Response;
   let text: string;
   try {
-    response = await fetch(`${base}${path}`, { method: body === undefined ? "GET" : "POST", headers: body === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(20000), credentials: "omit" });
+    response = await fetch(`${base}${path}`, { method: body === undefined ? "GET" : "POST", headers: body === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(timeoutMs), credentials: "omit" });
     text = await response.text();
   } catch (error) {
     if (typeof error === "object" && error !== null && "name" in error && (error.name === "TimeoutError" || error.name === "AbortError")) throw new ApiError("The model service timed out. It may be starting up; try again shortly.", {}, "timeout");

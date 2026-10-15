@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssessRouteImport } from './routes/assess'
+import { Route as ChatbotRouteImport } from './routes/chatbot'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as ResultsRouteImport } from './routes/results'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const AssessRoute = AssessRouteImport.update({
   id: '/assess',
   path: '/assess',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatbotRoute = ChatbotRouteImport.update({
+  id: '/chatbot',
+  path: '/chatbot',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -38,12 +44,14 @@ const ResultsRoute = ResultsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assess': typeof AssessRoute
+  '/chatbot': typeof ChatbotRoute
   '/learn': typeof LearnRoute
   '/results': typeof ResultsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assess': typeof AssessRoute
+  '/chatbot': typeof ChatbotRoute
   '/learn': typeof LearnRoute
   '/results': typeof ResultsRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/assess': typeof AssessRoute
+  '/chatbot': typeof ChatbotRoute
   '/learn': typeof LearnRoute
   '/results': typeof ResultsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assess' | '/learn' | '/results'
+  fullPaths: '/' | '/assess' | '/chatbot' | '/learn' | '/results'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assess' | '/learn' | '/results'
-  id: '__root__' | '/' | '/assess' | '/learn' | '/results'
+  to: '/' | '/assess' | '/chatbot' | '/learn' | '/results'
+  id: '__root__' | '/' | '/assess' | '/chatbot' | '/learn' | '/results'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssessRoute: typeof AssessRoute
+  ChatbotRoute: typeof ChatbotRoute
   LearnRoute: typeof LearnRoute
   ResultsRoute: typeof ResultsRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/assess'
       fullPath: '/assess'
       preLoaderRoute: typeof AssessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chatbot': {
+      id: '/chatbot'
+      path: '/chatbot'
+      fullPath: '/chatbot'
+      preLoaderRoute: typeof ChatbotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssessRoute: AssessRoute,
+  ChatbotRoute: ChatbotRoute,
   LearnRoute: LearnRoute,
   ResultsRoute: ResultsRoute,
 }

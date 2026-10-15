@@ -48,6 +48,21 @@ Development uses the existing Vite server’s `/model-api` proxy to `127.0.0.1:8
 
 The API client translates `numeric` into existing numeric controls and joins field-error arrays into readable inline messages. The exact 52 inputs replace the old seven mock inputs when metadata loads. Overall CAD/Normal results display in the existing layout; arteries remain neutral, explanations unavailable, and sliders disabled because no ranges are supplied.
 
+## AI heart-health chat
+
+`POST /chat` sends an educational chat request to Google's Gemini API from the Python service only. The request accepts a `message` (1–3,000 characters), at most 12 previous user/assistant turns, and an optional consented assessment-output object containing the actual overall prediction, CAD/Normal probabilities, and any returned LAD/LCX/RCA outputs. Requests and conversation history are not stored by the service. The frontend requires consent before sending messages and separate confirmation before including assessment outputs; only model outputs, not patient input measurements, are included in that optional context.
+
+Set these variables in the backend host's environment (Render dashboard), never as `VITE_*` values:
+
+```text
+GEMINI_API_KEY=<Google AI Studio API key, entered as a secret>
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_TIMEOUT_SECONDS=45
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,https://YOUR_ACTUAL_FRONTEND_ORIGIN
+```
+
+Keep any existing required origins in `CORS_ORIGINS` and replace the deployed frontend placeholder with its exact origin. Values are comma-separated. Do not use wildcard origins. Adding the `/chat` route and Gemini dependency requires a backend redeploy; configure the key in Render's protected environment-variable settings and redeploy. Rebuild/redeploy the frontend to publish its new `/chatbot` page. The root frontend already uses `VITE_API_BASE_URL=https://cad-backend-2.onrender.com`; no Gemini key belongs in frontend configuration. Changing the frontend base URL is unnecessary.
+
 ## Tests
 
 ```sh
@@ -69,4 +84,4 @@ docker run --rm -p 8000:8000 \
   aurapulse-cad
 ```
 
-Replace the example origin with your actual origin. Docker runs as a non-root user and supports the host’s `PORT`. Native start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT --no-access-log`; build command: `pip install --upgrade pip && pip install -r requirements.txt`. Set `ENV=production`, `CORS_ORIGINS`, optionally `ARTIFACTS_DIR`, `LOG_LEVEL`, `MAX_BODY_BYTES`; readiness path `/health`. Put TLS/HTTPS in front of the service and prevent public access to the artifact directory. Optional proxy-level rate limiting is advisable before public clinical use. Free hosts may sleep. No Python production deployment or hosted frontend connection is claimed until you provide a reachable deployed service URL.
+For local Vite access from the deployed backend, set Render's `CORS_ORIGINS` to `http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:8080,https://YOUR_ACTUAL_FRONTEND_ORIGIN`. Keep the HTTPS origin for the published frontend; replace the placeholder with its exact origin (scheme and host, including a non-default port if applicable). Origins are comma-separated with no spaces. The service permits these explicit localhost HTTP origins in production, but still requires at least one HTTPS frontend origin. Do not use `*`. Docker runs as a non-root user and supports the host’s `PORT`. Native start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT --no-access-log`; build command: `pip install --upgrade pip && pip install -r requirements.txt`. Set `ENV=production`, `CORS_ORIGINS`, optionally `ARTIFACTS_DIR`, `LOG_LEVEL`, `MAX_BODY_BYTES`; readiness path `/health`. Put TLS/HTTPS in front of the service and prevent public access to the artifact directory. Optional proxy-level rate limiting is advisable before public clinical use. Free hosts may sleep. No Python production deployment or hosted frontend connection is claimed until you provide a reachable deployed service URL.

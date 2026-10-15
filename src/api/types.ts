@@ -20,9 +20,16 @@ export interface Prediction {
   prediction: "CAD" | "Normal";
   probabilities: { CAD: number; Normal: number };
   vessels?: Partial<Record<VesselId, number | undefined>> | undefined;
+  arteryPredictions?: Partial<Record<VesselId, { stenotic_probability: number; predicted_class?: string | undefined } | undefined>> | undefined;
   contributions?: Partial<Record<VesselId | "overall", Contribution[] | undefined>> | undefined;
   disclaimer?: string | undefined;
   model_version: string;
+}
+export interface ChatTurn { role: "user" | "assistant"; content: string }
+export interface ChatAssessment {
+  cad_prediction: "CAD" | "Normal";
+  probabilities: { CAD: number; Normal: number };
+  artery_predictions: Partial<Record<VesselId, { stenotic_probability: number; predicted_class?: string | undefined }>>;
 }
 export class ApiError extends Error {
   constructor(message: string, public fields: Record<string, string> = {}, public code = "unknown") { super(message); }

@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { ApiError, excluded, safeFeatures, validateFeature, type FeatureDefinition, type ModelInfo, type FormValues, type Prediction } from "./types";
+import { ApiError, excluded, safeFeatures, validateFeature, type ChatAssessment, type ChatTurn, type FeatureDefinition, type ModelInfo, type FormValues, type Prediction } from "./types";
 import { mockModelInfo, mockPredict } from "./mock";
 import { modelBaseUrl, modelRequest } from "./transport";
 export { normalizeFieldErrors } from "./transport";
 
 export const USE_MOCK = import.meta.env['VITE_USE_MOCK'] === "true";
 const probability = z.number().min(0).max(1);
-const artery = z.object({ stenotic_probability: probability, predicted_class: z.string().optional() });
+const artery = z.object({ stenotic_probability: probability, predicted_class: z.string().nullish() });
 const cadPredictionSchema = z.object({
   prediction: z.enum(["CAD", "Normal"]), probabilities: z.object({ CAD: probability, Normal: probability }),
   disclaimer: z.string().optional(), model_version: z.string(),
@@ -58,12 +58,14 @@ export function adaptPrediction(value: unknown): Prediction {
   if (!parsed.success) throw new ApiError("The model service returned incompatible prediction data.", {}, "invalid_prediction");
   const { cad_prediction, artery_predictions } = parsed.data;
   if (!cad_prediction) throw new ApiError("The model service did not return the overall CAD prediction.", {}, "missing_cad_prediction");
-  const vessels = artery_predictions ? Object.fromEntries(Object.entries(artery_predictions).filter(([, a]) => a !== undefined).map(([id, a]) => [id, a?.stenotic_probability])) : undefined;
-  return { ...cad_prediction, vessels };
+  const available = artery_predictions ? Object.entries(artery_predictions).filter((entry): entry is [string, NonNullable<typeof entry[1]>] => entry[1] !== undefined) : [];
+  const vessels = available.length ? Object.fromEntries(available.map(([id, result]) => [id, result.stenotic_probability])) : undefined;
+  const arteryPredictions = available.length ? Object.fromEntries(available.map(([id, result]) => [id, { stenotic_probability: result.stenotic_probability, ...(result.predicted_class == null ? {} : { predicted_class: result.predicted_class }) }])) : undefined;
+  return { ...cad_prediction, vessels, arteryPredictions };
 }
 
-async function request(path: string, body?: unknown) {
-  return modelRequest(modelBaseUrl(import.meta.env['VITE_API_BASE_URL'], import.meta.env.DEV), path, body);
+async function request(path: string, body?: unknown, timeoutMs?: number) {
+  return modelRequest(modelBaseUrl(import.meta.env['VITE_API_BASE_URL'], import.meta.env.DEV), path, body, timeoutMs);
 }
 export async function getModelInfo(): Promise<ModelInfo> {
   if (USE_MOCK) return mockModelInfo;
@@ -76,4 +78,11 @@ export async function predict(values: FormValues): Promise<Prediction> {
   if (USE_MOCK) return mockPredict(features);
   const info = await getModelInfo();
   return adaptPrediction(await request("/predict", buildPredictionRequest(features, info)));
+}
+const chatResponseSchema = z.object({ reply: z.string().trim().min(1).max(8000) });
+export async function sendChatMessage(message: string, history: ChatTurn[], assessment?: ChatAssessment): Promise<string> {
+  const data = await request("/chat", { message, history, ...(assessment ? { assessment } : {}) }, 60000);
+  const parsed = chatResponseSchema.safeParse(data);
+  if (!parsed.success) throw new ApiError("The AI assistant returned an unexpected response. Please retry.", {}, "invalid_chat_response");
+  return parsed.data.reply;
 }

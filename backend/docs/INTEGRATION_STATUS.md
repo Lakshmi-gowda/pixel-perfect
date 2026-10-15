@@ -1,5 +1,14 @@
 # Integration verification — 2026-10-12
 
+## Chatbot deployment recheck — 2026-10-15
+
+- Frontend development, production and example configs target `https://cad-backend-2.onrender.com` with mock mode disabled. `sendChatMessage` sends `POST /chat` with `{message, history, assessment?}` and expects a non-empty `data.reply`.
+- The deployed service is healthy (`GET /health`: HTTP 200; all four CAD/artery models report loaded), but its live OpenAPI lists only `/health/live`, `/health`, `/model-info`, and `/predict`. `POST /chat` returns HTTP 404 `NOT_FOUND`. This is the exact cause of the chat's displayed “Not Found”: the deployed FastAPI build has no registered chat route, not a frontend path or response-schema mismatch.
+- The local backend source now registers `POST /chat` and uses the official `google-genai` SDK. Its request schema supports the frontend message, conversation history, and optional consented assessment output; its response matches the frontend `{success:true,data:{reply}}` adapter. It reads `GEMINI_API_KEY` server-side and defaults `GEMINI_MODEL` to `gemini-2.5-flash`.
+- CORS preflight for `http://localhost:5173` returns HTTP 200. The preview origin recorded below is currently rejected with HTTP 400; set Render `CORS_ORIGINS` to the exact current frontend origin(s), retaining only explicitly needed origins.
+- The Render service cannot serve a genuine chat reply until the backend build containing this route is deployed and `GEMINI_API_KEY` is configured in Render. Neither a genuine provider request nor hosted frontend rendering of its reply has been verified yet. After deployment, verify `POST /chat` returns a non-empty `data.reply`, then confirm the chatbot displays that text. Keep the key only in Render's secret environment configuration.
+- The endpoint probe showed the deployed service's existing health/model routes remain available. After deployment, recheck `/health`, `/model-info`, and the existing `/predict` contract to ensure the CAD service remains intact.
+
 ## Current verification — 2026-10-13, updated cad-backend-2 deployment
 
 - Frontend development, production and example configurations use only `https://cad-backend-2.onrender.com`, mock mode off; retained Python source is not used.

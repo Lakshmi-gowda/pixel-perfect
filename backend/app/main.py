@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
-from app.api import health, model_info, predict
+from app.api import chat, health, model_info, predict
 from app.core.config import Settings
 from app.core.errors import ServiceError, error_response
 from app.services.artifact_loader import load_bundle
@@ -53,7 +53,7 @@ def create_app(settings=None):
         logger.error("Unexpected inference service failure (%s)", type(error).__name__)
         return error_response(ServiceError(500, "INTERNAL_ERROR", "The model service could not complete the request."))
 
-    for router in [health.router, model_info.router, predict.router]:
+    for router in [health.router, model_info.router, predict.router, chat.router]:
         api.include_router(router)
     # Outermost wrapper ensures CORS also applies to unexpected 500 responses.
     return CORSMiddleware(api, allow_origins=list(settings.cors_origins), allow_credentials=False,

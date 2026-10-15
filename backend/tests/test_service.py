@@ -99,10 +99,17 @@ def test_body_limit_and_cors(client):
     assert response.headers["access-control-allow-origin"] == "http://localhost:8080"
 
 
-def test_cors_preflight(client):
-    response = client.options("/predict", headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "Content-Type"})
+@pytest.mark.parametrize("origin", [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:8080",
+])
+def test_cors_preflight(client, origin):
+    response = client.options("/predict", headers={"Origin": origin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "Content-Type"})
     assert response.status_code == 200
-    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+    assert response.headers["access-control-allow-origin"] == origin
     blocked = client.options("/predict", headers={"Origin": "https://untrusted.example", "Access-Control-Request-Method": "POST"})
     assert "access-control-allow-origin" not in blocked.headers
 
@@ -125,6 +132,25 @@ def test_restricted_loader_rejects_arbitrary_globals(tmp_path):
 def test_wildcard_cors_rejected():
     with pytest.raises(ValueError):
         Settings(cors_origins=("*",))
+
+
+def test_production_cors_accepts_local_development_origins():
+    Settings(
+        env="production",
+        cors_origins=(
+            "https://aurapulse.example",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:5174",
+            "http://127.0.0.1:5174",
+            "http://localhost:8080",
+        ),
+    )
+
+
+def test_production_cors_requires_https_frontend_origin():
+    with pytest.raises(ValueError, match="at least one HTTPS"):
+        Settings(env="production", cors_origins=("http://localhost:5173",))
 
 
 def test_golden_prediction(client, bundle):

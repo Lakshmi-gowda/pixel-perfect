@@ -13,11 +13,11 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <div className="navbar">
         <Link to="/" className="brand" aria-label={`${brand.name} home`}><span className="brand-mark"><HeartPulse size={23} strokeWidth={1.7} /></span>{brand.name}</Link>
         {USE_MOCK && <span className="mock-badge" title="Development preview. All outputs are mock data.">MOCK DATA</span>}
-        <nav className="nav-links" aria-label="Main navigation"><Link to="/" className="nav-link" activeOptions={{ exact: true }}>Home</Link><Link to="/learn" className="nav-link">Learn</Link><Link to="/assess" className="nav-link">Assess</Link></nav>
+        <nav className="nav-links" aria-label="Main navigation"><Link to="/" className="nav-link" activeOptions={{ exact: true }}>Home</Link><Link to="/learn" className="nav-link">Learn</Link><Link to="/assess" className="nav-link">Assess</Link><Link to="/chatbot" className="nav-link">Heart Health AI</Link></nav>
         <Button asChild className="nav-cta"><Link to="/assess">Start assessment <ArrowUpRight /></Link></Button>
         <Button variant="ghost" size="icon" className="mobile-menu-toggle" aria-label={menu ? "Close menu" : "Open menu"} aria-expanded={menu} onClick={() => setMenu(v => !v)}>{menu ? <X /> : <Menu />}</Button>
       </div>
-      {menu && <nav className="mobile-nav" aria-label="Mobile navigation">{([['/', 'Home'], ['/learn', 'Learn'], ['/assess', 'Assess']] as const).map(([to, label]) => <Link key={to} to={to} onClick={() => setMenu(false)}>{label}</Link>)}<Button asChild><Link to="/assess" onClick={() => setMenu(false)}>Start assessment <ArrowUpRight /></Link></Button></nav>}
+      {menu && <nav className="mobile-nav" aria-label="Mobile navigation">{([['/', 'Home'], ['/learn', 'Learn'], ['/assess', 'Assess'], ['/chatbot', 'Heart Health AI']] as const).map(([to, label]) => <Link key={to} to={to} onClick={() => setMenu(false)}>{label}</Link>)}<Button asChild><Link to="/assess" onClick={() => setMenu(false)}>Start assessment <ArrowUpRight /></Link></Button></nav>}
       <div className="disclaimer-bar"><Info size={15} /><span>{disclaimer.long}</span></div>
     </header>
     <main>{children}</main>

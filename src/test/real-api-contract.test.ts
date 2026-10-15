@@ -30,7 +30,9 @@ describe("FastAPI contract adaptation", () => {
     expect(() => adaptPrediction({ cad_prediction: null, artery_predictions: null })).toThrow("overall CAD");
     const cad = { prediction: "Normal", probabilities: { CAD: 0, Normal: 1 }, model_version: "unit-test" };
     expect(adaptPrediction({ cad_prediction: cad, artery_predictions: null }).vessels).toBeUndefined();
-    expect(adaptPrediction({ cad_prediction: cad, artery_predictions: { LAD: { stenotic_probability: 0, predicted_class: "Normal" } } }).vessels).toEqual({ LAD: 0 });
+    const result = adaptPrediction({ cad_prediction: cad, artery_predictions: { LAD: { stenotic_probability: 0, predicted_class: "Normal" } } });
+    expect(result.vessels).toEqual({ LAD: 0 });
+    expect(result.arteryPredictions).toEqual({ LAD: { stenotic_probability: 0, predicted_class: "Normal" } });
     expect(() => adaptPrediction({ cad_prediction: cad, artery_predictions: { RCA: { stenotic_probability: 2 } } })).toThrow("incompatible");
   });
 });
